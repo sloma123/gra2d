@@ -19,6 +19,8 @@ var assets embed.FS
 type Game struct {
 	player *Player
 	scene  *Scene
+	win    bool
+	death  bool
 }
 
 type Scene struct {
@@ -65,6 +67,10 @@ func (g *Game) Update() error {
 		g.player.isJumping = false    // pozwól znowu skakać
 	}
 
+	g.win = checkCollision(g.player.x, g.player.y, 30, 30, 400, 397, 30, 30)
+	if g.win {
+		log.Println("Wygrałeś!")
+	}
 	return nil
 }
 
@@ -150,4 +156,11 @@ func DrawScene(img *ebiten.Image, screen *ebiten.Image, scaleX float64, scaleY f
 	}
 	screen.DrawImage(img, op)
 
+}
+
+func checkCollision(x1, y1, w1, h1, x2, y2, w2, h2 float64) bool {
+	if x1 < x2+w2 && x1+w1 > x2 && y1 < y2+h2 && y1+h1 > y2 {
+		return true
+	}
+	return false
 }
