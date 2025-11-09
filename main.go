@@ -9,25 +9,34 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+// dyrektywa kompilatora do osadzenia plików z assets
+//
 //go:embed assets/*
 var assets embed.FS
 
-var playerImage *ebiten.Image
+// FS - file system
 
-// Game struktura gry
-type Game struct{}
+type Game struct {
+	player *Player
+}
 
-// Update – logika gry
+type Player struct {
+	Image *ebiten.Image
+}
+
+// wykonuje się co klatkę
 func (g *Game) Update() error {
 	return nil
 }
 
-// Draw – rysowanie na ekranie
+// wykonuje się co klatkę
 func (g *Game) Draw(screen *ebiten.Image) {
-	screen.DrawImage(playerImage, nil)
+	if g.player != nil && g.player.Image != nil {
+		screen.DrawImage(g.player.Image, nil)
+	}
 }
 
-// Layout – rozmiar okna
+// wykonuje się na początku i przy zmianie rozmiaru okna
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return 320, 240
 }
@@ -42,12 +51,16 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	playerImage = ebiten.NewImageFromImage(img)
+	playerImg := ebiten.NewImageFromImage(img)
+
+	player := &Player{Image: playerImg}
+
+	game := &Game{player: player}
 
 	ebiten.SetWindowSize(640, 480)
-	ebiten.SetWindowTitle("Osadzony obraz PNG w grze")
+	ebiten.SetWindowTitle("Gra 2d")
 
-	if err := ebiten.RunGame(&Game{}); err != nil {
+	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
 	}
 }
